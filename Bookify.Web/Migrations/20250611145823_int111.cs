@@ -1,12 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Bookify.Web.Data.Migrations
+namespace Bookify.Web.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCategoriesTable : Migration
+    public partial class int111 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,11 +27,11 @@ namespace Bookify.Web.Data.Migrations
                 });
         }
 
+
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Categories");
+
         }
     }
 }
