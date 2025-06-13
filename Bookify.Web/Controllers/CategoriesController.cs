@@ -27,7 +27,7 @@ namespace Bookify.Web.Controllers
         public IActionResult Create()
         {
             return PartialView("_Form");
-            
+
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -40,13 +40,13 @@ namespace Bookify.Web.Controllers
 
             var category = new Category
             {
-                Name = model.Name,           
+                Name = model.Name,
             };
 
             _context.Categories.Add(category);
             _context.SaveChanges();
-            
-            return PartialView("_CategoryRow",category);
+
+            return PartialView("_CategoryRow", category);
         }
         [HttpGet]
         [AjaxOnly]
@@ -62,7 +62,7 @@ namespace Bookify.Web.Controllers
                 Id = category.Id,
                 Name = category.Name,
             };
-            return PartialView("_Form",model);
+            return PartialView("_Form", model);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -78,7 +78,7 @@ namespace Bookify.Web.Controllers
                 return NotFound();
             }
             category.Name = model.Name;
-            category.LastUpdatedOn = DateTime.Now;       
+            category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
 
             return PartialView("_CategoryRow", category);
@@ -88,7 +88,7 @@ namespace Bookify.Web.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ToggleStatus(int id)
         {
-            
+
 
             var category = _context.Categories.Find(id);
             if (category == null)
@@ -96,9 +96,15 @@ namespace Bookify.Web.Controllers
                 return NotFound();
             }
             category.IsDeleted = !category.IsDeleted;
-            category.LastUpdatedOn =DateTime.Now;
+            category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
             return Ok(category.LastUpdatedOn.ToString());
         }
-    }
+        public IActionResult AllowItem(CategoryFormViewModel model) 
+        { 
+            var isExists = _context.Categories.Any(c => c.Name == model.Name);
+            return Json(!isExists); // Return true if the name is available, false if it exists
+
+        }
+    }  
 }
