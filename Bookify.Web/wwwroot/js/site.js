@@ -43,16 +43,14 @@ var headers = $('th');
 $.each(headers, function (i) {
     if (!$(this).hasClass('js-no-export')) {
         exportedCols.push(i);
-
     }
-}
+}); // <-- Added missing closing parenthesis
+
 // Class definition
-var KTDatatables = function () {
+var KTDatatables = (function () { // <-- Changed to IIFE to fix syntax error
 
     // Private functions
     var initDatatable = function () {
-
-
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": false,
@@ -116,9 +114,11 @@ var KTDatatables = function () {
     // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
     var handleSearchDatatable = () => {
         const filterSearch = document.querySelector('[data-kt-filter="search"]');
-        filterSearch.addEventListener('keyup', function (e) {
-            datatable.search(e.target.value).draw();
-        });
+        if (filterSearch) {
+            filterSearch.addEventListener('keyup', function (e) {
+                datatable.search(e.target.value).draw();
+            });
+        }
     }
 
     // Public methods
@@ -135,8 +135,9 @@ var KTDatatables = function () {
             handleSearchDatatable();
         }
     };
-}();
-$(document).ready(function () {
+})(); // <-- IIFE end
+
+$(function () { // <-- Use shorthand for document ready to avoid deprecated jQuery usage
     //Datatable
     KTUtil.onDOMContentLoaded(function () {
         KTDatatables.init();
@@ -148,7 +149,7 @@ $(document).ready(function () {
     }
 
     // handle form modal
-    $('body').delegate('.js-render-modal', 'click', function () {
+    $('body').on('click', '.js-render-modal', function () { // <-- Use .on instead of .delegate (deprecated)
         var btn = $(this);
         var modal = $('#Modal');
         modal.find('#ModalLabel').text(btn.data('title'));
@@ -158,23 +159,16 @@ $(document).ready(function () {
         }
         $.get({
             url: btn.data('url'),
-
             success: function (form) {
-
                 modal.find('.modal-body').html(form);
                 $.validator.unobtrusive.parse(modal);
             },
             error: function () {
                 showErrorMessage();
             },
-
-
         });
 
         modal.modal('show');
-
-
-
     });
 
 });
