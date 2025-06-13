@@ -43,6 +43,7 @@ var headers = $('th');
 $.each(headers, function (i) {
     if (!$(this).hasClass('js-no-export')) {
         exportedCols.push(i);
+
     }
 }
 // Class definition
