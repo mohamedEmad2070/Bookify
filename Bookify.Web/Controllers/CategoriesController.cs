@@ -1,26 +1,25 @@
-﻿using Bookify.Web.Core.Models;
-using Bookify.Web.Core.ViewModels;
-using Bookify.Web.Filters;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
+﻿
 namespace Bookify.Web.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
+
 
         [HttpGet]
         public IActionResult Index()
         {
             var categories = _context.Categories.AsNoTracking().ToList();
-            return View(categories);
+            var viewModel = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+
+            return View(viewModel);
         }
         [HttpGet]
         [AjaxOnly]
@@ -38,15 +37,12 @@ namespace Bookify.Web.Controllers
                 return BadRequest();
             }
 
-            var category = new Category
-            {
-                Name = model.Name,
-            };
+            var category = _mapper.Map<Category>(model);
 
             _context.Categories.Add(category);
             _context.SaveChanges();
-
-            return PartialView("_CategoryRow", category);
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
+            return PartialView("_CategoryRow", viewModel);
         }
         [HttpGet]
         [AjaxOnly]
@@ -57,11 +53,7 @@ namespace Bookify.Web.Controllers
             {
                 return NotFound();
             }
-            var model = new CategoryFormViewModel
-            {
-                Id = category.Id,
-                Name = category.Name,
-            };
+            var model = _mapper.Map<CategoryFormViewModel>(category);
             return PartialView("_Form", model);
         }
         [HttpPost]
@@ -77,11 +69,11 @@ namespace Bookify.Web.Controllers
             {
                 return NotFound();
             }
-            category.Name = model.Name;
+            category = _mapper.Map(model, category);
             category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
-
-            return PartialView("_CategoryRow", category);
+            var viewModel = _mapper.Map<CategoryViewModel>(category);
+            return PartialView("_CategoryRow", viewModel);
         }
 
         [HttpPost]
@@ -100,13 +92,13 @@ namespace Bookify.Web.Controllers
             _context.SaveChanges();
             return Ok(category.LastUpdatedOn.ToString());
         }
-        public IActionResult AllowItem(CategoryFormViewModel model) 
-        
-        { 
+        public IActionResult AllowItem(CategoryFormViewModel model)
+
+        {
             var caregory = _context.Categories.SingleOrDefault(c => c.Name == model.Name);
             var isAllowed = caregory == null || caregory.Id.Equals(model.Id); // Allow if the name is not in use or if it's the same category being edited
             return Json(isAllowed); // Return true if the name is available, false if it exists
 
         }
-    }  
+    }
 }

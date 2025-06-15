@@ -42,7 +42,7 @@ function onModalSuccess(item) {
         UpdatedRow = undefined;
     }
     KTMenu.init();
-    KTMenu.initHandlers();
+    KTMenu.initGlobalHandlers();
 }
 function onModalComplete() {
     $('body :submit').removeAttr('disabled');
@@ -61,8 +61,7 @@ var KTDatatables = (function () { // <-- Changed to IIFE to fix syntax error
     var initDatatable = function () {
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
-            "info": false,
-            'order': [],
+            "info": false,            
             'pageLength': 10,
         });
     }
@@ -163,7 +162,7 @@ $(function () { // <-- Use shorthand for document ready to avoid deprecated jQue
         modal.find('#ModalLabel').text(btn.data('title'));
         if (btn.data('update') !== undefined) {
             UpdatedRow = btn.parents('tr');
-            console.log(UpdatedRow);
+            
         }
         $.get({
             url: btn.data('url'),
