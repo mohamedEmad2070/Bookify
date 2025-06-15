@@ -23,6 +23,11 @@ function showErrorMessage(message = 'Something went wrong!') {
         }
     });
 }
+
+// implementin data-ajax-begin="onModalBegin" function
+function onModalBegin() {
+    $('body :submit').attr('disabled', 'disabled'); // Disable all submit buttons in the body to prevent multiple submissions
+}
 function onModalSuccess(item) {
     showSuccessMessage();
     $('#Modal').modal('hide');
@@ -32,13 +37,16 @@ function onModalSuccess(item) {
         datatable.row.add($item).draw();
     } else {
         // Update existing row using DataTables API
-        datatable.row(UpdatedRow).data($item).draw();
+        datatable.row(UpdatedRow).remove(); // احذف الصف القديم
+        datatable.row.add($item).draw();    // أضف الصف الجديد
         UpdatedRow = undefined;
     }
     KTMenu.init();
     KTMenu.initHandlers();
 }
-//datatabl
+function onModalComplete() {
+    $('body :submit').removeAttr('disabled');
+} 
 var headers = $('th');
 $.each(headers, function (i) {
     if (!$(this).hasClass('js-no-export')) {

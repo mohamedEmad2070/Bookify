@@ -6,7 +6,7 @@ namespace Bookify.Web.Core.ViewModels
     {
         public int Id { get; set; }
         [MaxLength(100, ErrorMessage = "Max Length is 100 chr.")]
-        [Remote("AllowItem", controller: "Category", ErrorMessage = "This Category Name Is Exists")]
+        [Remote("AllowItem",null,AdditionalFields ="Id",ErrorMessage="This Category Name Is Exists")]
         public string Name { get; set; } = null!;
     }
 }

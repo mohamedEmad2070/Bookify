@@ -101,9 +101,11 @@ namespace Bookify.Web.Controllers
             return Ok(category.LastUpdatedOn.ToString());
         }
         public IActionResult AllowItem(CategoryFormViewModel model) 
+        
         { 
-            var isExists = _context.Categories.Any(c => c.Name == model.Name);
-            return Json(!isExists); // Return true if the name is available, false if it exists
+            var caregory = _context.Categories.SingleOrDefault(c => c.Name == model.Name);
+            var isAllowed = caregory == null || caregory.Id.Equals(model.Id); // Allow if the name is not in use or if it's the same category being edited
+            return Json(isAllowed); // Return true if the name is available, false if it exists
 
         }
     }  
