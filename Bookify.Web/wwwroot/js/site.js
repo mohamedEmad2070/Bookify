@@ -1,14 +1,15 @@
 ﻿var table;
 var datatable;
-var UpdatedRow;
+var updatedRow;
 var exportedCols = [];
+
 function showSuccessMessage(message = 'Saved successfully!') {
     Swal.fire({
         icon: 'success',
-        title: 'Success',
+        title: 'Good Job',
         text: message,
         customClass: {
-            confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
+            confirmButton: "btn btn-primary"
         }
     });
 }
@@ -19,56 +20,56 @@ function showErrorMessage(message = 'Something went wrong!') {
         title: 'Oops...',
         text: message,
         customClass: {
-            confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
+            confirmButton: "btn btn-primary"
         }
     });
 }
 
-// implementin data-ajax-begin="onModalBegin" function
 function onModalBegin() {
-    $('body :submit').attr('disabled', 'disabled'); // Disable all submit buttons in the body to prevent multiple submissions
+    $('body :submit').attr('disabled', 'disabled').attr('data-kt-indicator', 'on');
 }
-function onModalSuccess(item) {
+
+function onModalSuccess(row) {
     showSuccessMessage();
     $('#Modal').modal('hide');
-    const $item = $(item); // Convert item HTML string to jQuery object
-    if (UpdatedRow === undefined) {
-        // Add new row using DataTables API
-        datatable.row.add($item).draw();
-    } else {
-        // Update existing row using DataTables API
-        datatable.row(UpdatedRow).remove(); // احذف الصف القديم
-        datatable.row.add($item).draw();    // أضف الصف الجديد
-        UpdatedRow = undefined;
+
+    if (updatedRow !== undefined) {
+        datatable.row(updatedRow).remove().draw();
+        updatedRow = undefined;
     }
+
+    var newRow = $(row);
+    datatable.row.add(newRow).draw();
+
     KTMenu.init();
-    KTMenu.initGlobalHandlers();
+    KTMenu.initHandlers();
 }
+
 function onModalComplete() {
-    $('body :submit').removeAttr('disabled');
-} 
+    $('body :submit').removeAttr('disabled').removeAttr('data-kt-indicator');
+}
+
+//DataTables
 var headers = $('th');
 $.each(headers, function (i) {
-    if (!$(this).hasClass('js-no-export')) {
+    if (!$(this).hasClass('js-no-export'))
         exportedCols.push(i);
-    }
-}); // <-- Added missing closing parenthesis
+});
 
 // Class definition
-var KTDatatables = (function () { // <-- Changed to IIFE to fix syntax error
-
+var KTDatatables = function () {
     // Private functions
     var initDatatable = function () {
         // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
-            "info": false,            
+            "info": false,
             'pageLength': 10,
         });
     }
 
     // Hook export buttons
     var exportButtons = () => {
-        const documentTitle = $('.js-datatables').data('document-titel');
+        const documentTitle = $('.js-datatables').data('document-title');
         var buttons = new $.fn.dataTable.Buttons(table, {
             buttons: [
                 {
@@ -121,11 +122,9 @@ var KTDatatables = (function () { // <-- Changed to IIFE to fix syntax error
     // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
     var handleSearchDatatable = () => {
         const filterSearch = document.querySelector('[data-kt-filter="search"]');
-        if (filterSearch) {
-            filterSearch.addEventListener('keyup', function (e) {
-                datatable.search(e.target.value).draw();
-            });
-        }
+        filterSearch.addEventListener('keyup', function (e) {
+            datatable.search(e.target.value).draw();
+        });
     }
 
     // Public methods
@@ -142,28 +141,31 @@ var KTDatatables = (function () { // <-- Changed to IIFE to fix syntax error
             handleSearchDatatable();
         }
     };
-})(); // <-- IIFE end
+}();
 
-$(function () { // <-- Use shorthand for document ready to avoid deprecated jQuery usage
-    //Datatable
+$(document).ready(function () {
+    //SweetAlert
+    var message = $('#Message').text();
+    if (message !== '') {
+        showSuccessMessage(message);
+    }
+
+    //DataTables
     KTUtil.onDOMContentLoaded(function () {
         KTDatatables.init();
     });
-    //sweetalert
-    var massage = $('#Message').text();
-    if (massage != '') {
-        showSuccessMessage(massage);
-    }
 
-    // handle form modal
-    $('body').on('click', '.js-render-modal', function () { // <-- Use .on instead of .delegate (deprecated)
+    //Handle bootstrap modal
+    $('body').delegate('.js-render-modal', 'click', function () {
         var btn = $(this);
         var modal = $('#Modal');
+
         modal.find('#ModalLabel').text(btn.data('title'));
+
         if (btn.data('update') !== undefined) {
-            UpdatedRow = btn.parents('tr');
-            
+            updatedRow = btn.parents('tr');
         }
+
         $.get({
             url: btn.data('url'),
             success: function (form) {
@@ -172,11 +174,12 @@ $(function () { // <-- Use shorthand for document ready to avoid deprecated jQue
             },
             error: function () {
                 showErrorMessage();
-            },
+            }
         });
 
         modal.modal('show');
     });
+
     //Handle Toggle Status
     $('body').delegate('.js-toggle-status', 'click', function () {
         var btn = $(this);
@@ -218,5 +221,4 @@ $(function () { // <-- Use shorthand for document ready to avoid deprecated jQue
             }
         });
     });
-
 });
