@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Bookify.Web.Core.ViewModels
+﻿namespace Bookify.Web.Core.ViewModels
 {
     public class CategoryFormViewModel
     {
         public int Id { get; set; }
-        [MaxLength(100, ErrorMessage = "Max Length is 100 chr.")]
-        [Remote("AllowItem",null,AdditionalFields ="Id",ErrorMessage="This Category Name Is Exists")]
+        [MaxLength(100, ErrorMessage = Errors.MaxLength), Display(Name = "Category")]
+        [Remote("AllowItem", null!, AdditionalFields = "Id", ErrorMessage = Errors.IsUnique)]
         public string Name { get; set; } = null!;
     }
 }

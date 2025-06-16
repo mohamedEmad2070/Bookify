@@ -1,7 +1,4 @@
-﻿using Bookify.Web.Core.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Bookify.Web.Core.ViewModels;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Bookify.Web.Data
 {

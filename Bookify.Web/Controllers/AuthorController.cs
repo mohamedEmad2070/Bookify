@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Bookify.Web.Controllers
+﻿namespace Bookify.Web.Controllers
 {
     public class AuthorController : Controller
     {
@@ -74,6 +72,33 @@ namespace Bookify.Web.Controllers
             _context.SaveChanges();
             var viewModel = _mapper.Map<AuthorViewModel>(author);
             return PartialView("_AuthorRow", viewModel);
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ToggleStatus(int id)
+        {
+
+
+            var auther = _context.Authors.Find(id);
+            if (auther == null)
+            {
+                return NotFound();
+            }
+            auther.IsDeleted = !auther.IsDeleted;
+            auther.LastUpdatedOn = DateTime.Now;
+            _context.SaveChanges();
+            return Ok(auther.LastUpdatedOn.ToString());
+        }
+        public IActionResult AllowItem(AuthorFormViewModel model)
+
+        {
+            var author = _context.Authors.SingleOrDefault(c => c.Name == model.Name);
+            var isAllowed = author == null || author.Id.Equals(model.Id); // Allow if the name is not in use or if it's the same category being edited
+            return Json(isAllowed); // Return true if the name is available, false if it exists
+
         }
 
 

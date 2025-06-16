@@ -12,6 +12,6 @@ namespace Bookify.Web.Filters
             return isAjax;
         }
 
-       
+
     }
 }
