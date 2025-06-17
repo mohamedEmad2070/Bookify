@@ -21,6 +21,12 @@ body {
   margin-bottom: 60px;
 }
 
+/* Start override theme*/
+.form-floating > .form-select {
+    
+    padding-bottom: .2rem;
+}
+/* end override theme*/
 /*Start bootbox stayling*/
 .bootbox-close-button {
     position: absolute;
@@ -31,6 +37,5 @@ body {
     background-color: transparent;
     border: 0;
     -webkit-appearance: none;
-    
 }
 /*end bootbox stayling*/
