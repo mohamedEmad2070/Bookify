@@ -41,11 +41,24 @@
                     <div class="mb-5">
                         <div class="form-floating mb-2">
                             <select class="form-select" asp-for="AuthorId" asp-items="@Model.Authors">
-                                <option>Select Author</option>
+                                <option value="">Select Author</option>
                             </select>
                             <label asp-for="AuthorId"></label>
                         </div>
                         <span asp-validation-for="AuthorId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-5">
+                        <div class="mb-2">
+                            <select class="form-select" asp-for="SelectedCategories" asp-items="@Model.Categories">
+                                <option>Select Categories</option>
+                            </select>
+                            <label asp-for="SelectedCategories"></label>
+                        </div>
+                        <span asp-validation-for="SelectedCategories" class="text-danger"></span>
                     </div>
                 </div>
             </div>
@@ -112,6 +125,10 @@
                     </div>
                 </div>
             </div>
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
