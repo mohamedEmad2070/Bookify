@@ -19,6 +19,7 @@ namespace Bookify.Web.Core.ViewModels
         [Display(Name = "Publishing Date")]
         public DateTime PublishingDate { get; set; }=DateTime.Now;
         public IFormFile? Image { get; set; }
+        public string? ImageUrl { get; set; }
         [MaxLength(100, ErrorMessage = Errors.MaxLength)]
         public string Hall { get; set; } = null!;
 

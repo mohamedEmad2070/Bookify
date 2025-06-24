@@ -36,7 +36,8 @@ namespace Bookify.Web.Controllers
 
             if (model.Image is not null)
             {
-                if (!_allowedExtensions.Contains(Path.GetExtension(model.Image.FileName)))
+                var extension = Path.GetExtension(model.Image.FileName);
+                if (!_allowedExtensions.Contains(extension))
                 {
                     ModelState.AddModelError(nameof(model.Image),Errors.notAllowedExtension);
                     return View("Form", PopulateViewModel(model));
@@ -46,11 +47,84 @@ namespace Bookify.Web.Controllers
                     ModelState.AddModelError(nameof(model.Image), Errors.maxFileSize);
                     return View("Form", PopulateViewModel(model));
                 }
+                var imageName = $"{Guid.NewGuid()}{extension}";
+                var path = Path.Combine($"{_webHostEnvironment.WebRootPath}/Images/Books", imageName);
+                using var stream = System.IO.File.Create(path);
+                model.Image.CopyTo(stream);
+                book.ImageUrl = imageName;
             }
 
             foreach (var category in model.SelectedCategories)
                 book.Categories.Add(new BookCategory { CategoryID = category });
             _context.Books.Add(book);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
+        public IActionResult Edit(int id)
+        {
+            var book = _context.Books.Include(b => b.Categories).SingleOrDefault(b => b.Id == id);
+
+
+            if (book is null)
+                return NotFound();
+            
+            var model = _mapper.Map<BookFormViewModel>(book);
+            var viewModel = PopulateViewModel(model);
+            viewModel.SelectedCategories = book.Categories.Select(c => c.CategoryID).ToList();
+            return View("Form", viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(BookFormViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("Form", PopulateViewModel(model));
+
+            var book = _context.Books.Include(b => b.Categories).SingleOrDefault(b => b.Id == model.Id);
+            
+            if (book is null)
+                return NotFound();
+
+            if (model.Image is not null)
+            {
+                if (!string.IsNullOrEmpty(book.ImageUrl))
+                {
+                    var oldImagePath = Path.Combine($"{_webHostEnvironment.WebRootPath}/Images/Books", book.ImageUrl);
+                    
+                    if (System.IO.File.Exists(oldImagePath))
+                        System.IO.File.Delete(oldImagePath);
+                }
+                var extension = Path.GetExtension(model.Image.FileName);
+                if (!_allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError(nameof(model.Image), Errors.notAllowedExtension);
+                    return View("Form", PopulateViewModel(model));
+                }
+                if (model.Image.Length > _maxFileSize)
+                {
+                    ModelState.AddModelError(nameof(model.Image), Errors.maxFileSize);
+                    return View("Form", PopulateViewModel(model));
+                }
+                var imageName = $"{Guid.NewGuid()}{extension}";
+                var path = Path.Combine($"{_webHostEnvironment.WebRootPath}/Images/Books", imageName);
+                using var stream = System.IO.File.Create(path);
+                model.Image.CopyTo(stream);
+                model.ImageUrl = imageName;
+            }
+
+            else if (model.Image is null && !string.IsNullOrEmpty(book.ImageUrl))
+                model.ImageUrl = book.ImageUrl;
+
+            book = _mapper.Map(model, book);
+            book.LastUpdatedOn = DateTime.Now;
+
+
+            foreach (var category in model.SelectedCategories)
+                book.Categories.Add(new BookCategory { CategoryID = category });
+
+
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
