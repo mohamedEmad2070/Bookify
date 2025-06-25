@@ -7,9 +7,11 @@ namespace Bookify.Web.Core.ViewModels
     {
         public int Id { get; set; }
         [MaxLength(500,ErrorMessage =Errors.MaxLength)]
+        [Remote("AllowItem", null!, AdditionalFields = "Id,AuthorId", ErrorMessage = Errors.IsUniqueBook)]
         public string Title { get; set; } = null!;
 
         [Display(Name ="Author")]
+        [Remote("AllowItem", null!, AdditionalFields = "Id,Title", ErrorMessage = Errors.IsUnique)]
         public string AuthorId { get; set; }
         public IEnumerable<SelectListItem>? Authors { get; set; }
 
@@ -26,6 +28,7 @@ namespace Bookify.Web.Core.ViewModels
         [Display(Name = "Is Available for Rental")]
         public bool ISAvailableForRental { get; set; }
 
+        [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; } = null!;
 
         [Display(Name = "Categories")]

@@ -2,3 +2,10 @@
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
 <script src="~/js/validation-styling.js"></script>
+
+<script>
+    // Ensure all fields are validated, including hidden ones
+    $.validator.setDefaults({
+        ignore: []
+    });
+</script>

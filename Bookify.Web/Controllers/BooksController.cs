@@ -140,5 +140,14 @@ namespace Bookify.Web.Controllers
             return viewModel;
 
         }
+
+        public IActionResult AllowItem(BookFormViewModel model)
+
+        {
+            var book = _context.Books.SingleOrDefault(c => c.Title == model.Title && c.AuthorId == model.AuthorId);
+            var isAllowed = book == null || book.Id.Equals(model.Id); // Allow if the name is not in use or if it's the same category being edited
+            return Json(isAllowed); // Return true if the name is available, false if it exists
+
+        }
     }
 }
