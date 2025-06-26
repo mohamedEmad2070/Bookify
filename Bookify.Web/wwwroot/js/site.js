@@ -161,6 +161,7 @@ $(document).ready(function () {
         singleDatePicker: true,
         autoApply: true,
         drops: 'up',
+        maxDate: new Date(),
     });
 
 

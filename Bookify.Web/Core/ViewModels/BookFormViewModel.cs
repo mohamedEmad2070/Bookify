@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.FileProviders;
+using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
 namespace Bookify.Web.Core.ViewModels
 {
@@ -19,6 +20,7 @@ namespace Bookify.Web.Core.ViewModels
         public string Publisher { get; set; } = null!;
 
         [Display(Name = "Publishing Date")]
+        [AssertThat("PublishingDate <= Today()")]
         public DateTime PublishingDate { get; set; }=DateTime.Now;
         public IFormFile? Image { get; set; }
         public string? ImageUrl { get; set; }
